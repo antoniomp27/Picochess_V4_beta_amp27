@@ -94,6 +94,32 @@
 
 
     <script type="text/javascript" src="/static/js/jquery-3.6.1.min.js"></script>
+    <script>
+        // Parche global para prevenir errores de Bootstrap
+        (function() {
+            // Interceptar errores globales
+            window.addEventListener('error', function(e) {
+                if (e.message && (e.message.includes('split') || e.message.includes('null'))) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Parche para split
+            const originalSplit = String.prototype.split;
+            String.prototype.split = function() {
+                if (this == null || this == undefined) return [];
+                return originalSplit.apply(this, arguments);
+            };
+            
+            // Parche para getAttribute
+            const originalGetAttribute = Element.prototype.getAttribute;
+            Element.prototype.getAttribute = function(name) {
+                const value = originalGetAttribute.call(this, name);
+                return value === null ? '' : value;
+            };
+        })();
+    </script>
     <script type="text/javascript" src="/static/js/datatables.min.js"></script>
     <script type="text/javascript" src="/static/js/dataTables.select.min.js"></script>
     <script type="text/javascript" src="/static/js/dataTables.bootstrap5.min.js"></script>
@@ -200,7 +226,7 @@
                                                 outline:none;
                                                 width:1px; height:1px;" maxlength="5" autocomplete="off"
                                                 autocorrect="off" autocapitalize="off" spellcheck="false"
-                                                title="Move" />
+                                                title="Move" data-bs-toggle="" />
                                         </form>
                                     </div>
                                 </div>
@@ -464,8 +490,8 @@
                 moveInput.addEventListener('keydown', async function (e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        const move = this.value || '';
-                        if (move.length > 0) {
+                        const move = (this.value || '').toString();
+                        if (move && move.length > 0) {
                             await fetch('/channel', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

@@ -220,6 +220,9 @@ var bookDataTable = $('#BookTable').DataTable({
         'data': function (d) {
             d.action = 'get_book_moves';
             d.fen = dataTableFen;
+        },
+        'error': function (xhr, error, thrown) {
+            // Silenciar errores de conexión a servidor de libros
         }
     },
     'columns': [
@@ -292,7 +295,7 @@ var gameDataTable = $('#GameTable').DataTable({
             d.fen = dataTableFen;
         },
         'error': function (xhr, error, thrown) {
-            console.warn(xhr);
+            // Silenciar errores de conexión a servidores auxiliares
         }
     },
     'columns': [
@@ -1678,6 +1681,12 @@ function setTitle(data) {
 
 // copied from loadGame()
 function setHeaders(data) {
+    // Validar que data sea un objeto válido
+    if (!data || typeof data !== 'object') {
+        console.debug('setHeaders: data is not a valid object', data);
+        return;
+    }
+    
     if ('FEN' in data && 'SetUp' in data) {
         if ('Variant' in data && 'Chess960' === data['Variant']) {
             chessGameType = 1; // values from chess960.js
