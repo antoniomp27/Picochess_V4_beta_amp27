@@ -339,11 +339,26 @@
                                                         </div>
                                                     </div>
 
-                                                    <div id="listener">
-                                                        <embed name="nacl_module" id='stockfish_module' width="0"
-                                                            height="0" src='/static/stockfish/stockfish.nmf'
-                                                            type='application/x-pnacl' />
-                                                    </div>
+                                                    <!-- Inicialización moderna de Stockfish -->
+                                                    <script src="/static/js/stockfish.js"></script>
+                                                    <script>
+                                                    // Crear instancia del motor como Web Worker
+                                                    const stockfish = new Worker("/static/js/stockfish.js");
+
+                                                    // Recibir mensajes del motor
+                                                    stockfish.onmessage = function(event) {
+                                                    console.log("Stockfish dice:", event.data);
+                                                    // Aquí puedes actualizar tu interfaz:
+                                                    // Ejemplo: document.getElementById("engineStatus").innerText = event.data;
+                                                      };
+
+                                                    // Enviar comandos UCI al motor
+                                                    stockfish.postMessage("uci");        // Inicializa el motor
+                                                    stockfish.postMessage("isready");    // Comprueba que está listo
+                                                    stockfish.postMessage("position startpos"); // Posición inicial
+                                                    stockfish.postMessage("go depth 20");       // Pide análisis a profundidad 20
+                                                    </script>
+
                                                     <div id="engineStatus"></div>
                                                 </div>
                                                 <div class="row">
