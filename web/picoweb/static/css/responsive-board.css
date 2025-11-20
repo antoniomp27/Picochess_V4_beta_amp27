@@ -76,11 +76,12 @@
     .form-check-label { font-size: 0.8rem; }
 }
 
-/*****************************************/
-/* Optimización específica para 1280x720 */
-/*****************************************/
-@media (min-width: 1200px) and (max-width: 1300px) and (min-height: 700px) and (max-height: 740px) {
-    #xboardsection { max-width: 1270px; max-height: 710px; }
+/****************************************************/
+/* Optimización específica para 1280x720 y 1280x800 */
+/****************************************************/
+
+@media (min-width: 1200px) and (max-width: 1300px) and (min-height: 700px) and (max-height: 850px) {
+    #xboardsection { max-width: 1270px; max-height: 790px; }
     .evaluation-container-horizontal { max-width: 1270px; margin: 0 auto; }
     .scroll_movelist {
         height: 180px; min-height: 180px; max-height: 180px;
@@ -92,11 +93,12 @@
     .scroll_obooklist, .scroll_engine, #GameTable_wrapper { height: 320px; max-height: 320px; }
     .gameMoves, .bookMoves { font-size: 1.6vw; }
     #data.card { height: 41.5vh; min-height: 30vh; max-height: 50vh; }
-    body { overflow-y: hidden; max-height: 720px; }
-    .scroll-portrait { height: 720px; max-height: 720px; overflow-y: hidden; }
+    body { overflow-y: hidden; max-height: 850px; }
+    .scroll-portrait { height: 850px; max-height: 850px; overflow-y: hidden; }
     .container-fluid > .row > .col:first-child { flex: 0 0 48%; max-width: 48%; }
     .container-fluid > .row > .col:last-child { flex: 0 0 52%; max-width: 52%; }
 }
+
 
 /* Estilos comunes */
 .cg-board piece.dragging { cursor: move; z-index: 999; }
