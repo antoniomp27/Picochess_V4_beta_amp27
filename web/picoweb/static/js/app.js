@@ -39,6 +39,8 @@ var simpleNags = {
     '142': '&#8979',
     '146': 'N'
 };
+// Speech toggle for the web client (set via setSpeechMuted)
+var speechMuted = false;
 
 var speechAvailable = true
 if (typeof speechSynthesis === "undefined") {
@@ -57,14 +59,18 @@ if (speechAvailable) {
 }
 
 function talk(text) {
-    if (speechAvailable) {
+    if (speechAvailable && !speechMuted) {
         var msg = new SpeechSynthesisUtterance(text);
         msg.lang = "en-US";
         if (myvoice != "") {
             msg.voice = myvoice;
         }
-        // window.speechSynthesis.speak(msg);
+        window.speechSynthesis.speak(msg);
     }
+}
+
+function setSpeechMuted(muted) {
+    speechMuted = !!muted;
 }
 
 talk("Hello, welcome to Picochess!");
@@ -203,7 +209,6 @@ var bookDataTable = $('#BookTable').DataTable({
     'paging': false,
     'info': false,
     'searching': false,
-    'sScrollY': '168px',
     'order': [
         [1, 'desc']
     ],
@@ -280,7 +285,6 @@ var gameDataTable = $('#GameTable').DataTable({
     'paging': false,
     'info': false,
     'searching': false,
-    'sScrollY': '168px',
     'ordering': false,
     'select': { items: 'row', style: 'single', toggleable: false },
     'columnDefs': [{
@@ -702,14 +706,18 @@ var updateStatus = function () {
 
 
     if ($('#' + strippedFen).position()) {
-        moveListEl.scrollTop(0);
         var element = $('#' + strippedFen);
-        var y_position = element.position().top;
-        moveListEl.scrollTop(y_position);
         $(".fen").each(function () {
             $(this).removeClass('text-warning');
         });
         element.addClass('text-warning');
+
+        // Centrar el movimiento activo en el contenedor
+        var containerHeight = moveListEl.height();
+        var elementTop = element.position().top;
+        var elementHeight = element.outerHeight();
+        var scrollPosition = moveListEl.scrollTop() + elementTop - (containerHeight / 2) + (elementHeight / 2);
+        moveListEl.scrollTop(scrollPosition);
     }
 
     bookDataTable.ajax.reload();
@@ -997,7 +1005,7 @@ function loadGame(pgn_lines) {
             var move = board_stack[last_board_stack_index].move(preparsed_move, { sloppy: true });
             in_variation = true;
             if (move === null) {
-                console.log('Unparsed move:');
+                ('Unparsed move:');
                 console.log(preparsed_move);
                 console.log('Fen: ' + board_stack[last_board_stack_index].fen());
                 console.log('faulty line: ' + line);
@@ -1494,9 +1502,9 @@ function importPv(multipv) {
 
 function analyzePressed() {
     if ($('#AnalyzeText').text() === 'Analyze') {
-        $('#evaluationBar').show();
+        $('#evaluationBar').css('visibility', 'visible');
     } else {
-        $('#evaluationBar').hide();
+        $('#evaluationBar').css('visibility', 'hidden');
         // Limpiar contenedor de análisis al detener
         $('#pv_output').empty();
         // Recrear los contenedores según el multipv actual
@@ -1531,7 +1539,7 @@ function handleMessage(event) {
 function loadNaclStockfish() {
     var listener = document.getElementById('listener');
     listener.addEventListener('load', stockfishPNACLModuleDidLoad, true);
-    listener.addEventListener('message', function(event) {
+    listener.addEventListener('message', function (event) {
         if (event && event.data) {
             handleMessage(event);
         }
@@ -1562,7 +1570,7 @@ function stopAnalysis() {
 
     // Ocultar la barra de evaluación cuando se detiene el análisis
     if (!window.analysis) {
-        $('#evaluationBar').hide();
+        $('#evaluationBar').css('visibility', 'hidden');
     }
 }
 
@@ -1605,7 +1613,7 @@ function analyze(position_update) {
             stopAnalysis();
             window.analysis = false;
             $('#engineStatus').html('');
-            $('#evaluationBar').hide();
+            $('#evaluationBar').css('visibility', 'hidden');
             return;
         }
     }
@@ -1686,7 +1694,7 @@ function setHeaders(data) {
         console.debug('setHeaders: data is not a valid object', data);
         return;
     }
-    
+
     if ('FEN' in data && 'SetUp' in data) {
         if ('Variant' in data && 'Chess960' === data['Variant']) {
             chessGameType = 1; // values from chess960.js
@@ -1726,7 +1734,38 @@ function getAllInfo() {
     });
 }
 
+var boardThemes = ['blue', 'green', 'metal', 'newspaper', 'soft', 'wood', 'natural-wood'];
+var currentThemeIndex = parseInt(localStorage.getItem('boardThemeIndex')) || 6;
+
+function changeBoardTheme() {
+    currentThemeIndex = (currentThemeIndex + 1) % boardThemes.length;
+    var theme = boardThemes[currentThemeIndex];
+
+    $('#xboardsection').removeClass('blue green metal newspaper soft wood natural-wood');
+    $('#xboardsection').addClass(theme);
+
+    var themeLink = $('#theme-' + theme);
+    if (themeLink.length === 0) {
+        $('head').append('<link id="theme-' + theme + '" rel="stylesheet" href="/static/css/chessground/theme_' + theme.replace('-', '_') + '.css" />');
+    }
+
+    localStorage.setItem('boardThemeIndex', currentThemeIndex);
+}
+
+function loadSavedTheme() {
+    var theme = boardThemes[currentThemeIndex];
+    $('#xboardsection').removeClass('blue green metal newspaper soft wood natural-wood');
+    $('#xboardsection').addClass(theme);
+
+    var themeLink = $('#theme-' + theme);
+    if (themeLink.length === 0) {
+        $('head').append('<link id="theme-' + theme + '" rel="stylesheet" href="/static/css/chessground/theme_' + theme.replace('-', '_') + '.css" />');
+    }
+}
+
 $('#flipOrientationBtn').on('click', boardFlip);
+$('#DgtSyncBtn').on('click', goToDGTFen);
+$('#colorBtn').on('click', changeBoardTheme);
 $('#backBtn').on('click', goBack);
 $('#fwdBtn').on('click', goForward);
 $('#startBtn').on('click', goToStart);
@@ -1737,6 +1776,7 @@ $(window).on('load', function () {
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
         $('#downloadBtn').hide();
         $('#uploadBtn').hide();
+        $('#btn-mute').hide();
     } else {
         $('#downloadBtn').on('click', download);
         $('#uploadBtn').on('click', function () {
@@ -1789,6 +1829,7 @@ $("#ClockLeverBtn").mouseup(function () {
 })
 
 $(function () {
+    loadSavedTheme();
     getAllInfo();
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

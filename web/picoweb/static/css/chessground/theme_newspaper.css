@@ -1,8 +1,8 @@
 /*
  * Board
  */
-.green .cg-board-wrap {
-  background-image: url(images/board/green.svg);
+.newspaper .cg-board-wrap {
+  background-image: url(images/board/newspaper.svg);
 }
 
 .merida .cg-board piece.pawn.white {
