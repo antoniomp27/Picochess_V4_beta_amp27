@@ -1,6 +1,8 @@
 [Unit]
 Description=PicoChess updater (runs if flagged at boot)
-After=network.target
+Before=picochess.service
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot

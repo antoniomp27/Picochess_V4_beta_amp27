@@ -7841,6 +7841,16 @@ class DgtTranslate(object):
                 devs=devs,
             )
             logger.warning("unknown text_id %s", text_id)
+
+        # Language-specific selection, with Spanish overrides where needed
+        if self.language == "es":
+            # Prefer explicit Spanish texts where they differ from English
+            if estxt is not None and estxt is not entxt:
+                return self.capital_text(estxt)
+            es_override = self._spanish_override(text_id, entxt, msg)
+            if es_override is not None:
+                return self.capital_text(es_override)
+
         if self.language == "de" and detxt is not None:
             return self.capital_text(detxt)
         if self.language == "nl" and nltxt is not None:
@@ -7852,3 +7862,1382 @@ class DgtTranslate(object):
         if self.language == "it" and ittxt is not None:
             return self.capital_text(ittxt)
         return self.capital_text(entxt)
+
+    def _create_spanish_text(
+        self,
+        base: Dgt.DISPLAY_TEXT,
+        web_text: str,
+        large_text: str,
+        medium_text: str,
+        small_text: str,
+    ) -> Dgt.DISPLAY_TEXT:
+        """
+        Create a Spanish DISPLAY_TEXT, copying timing and beep settings
+        from an already configured base text.
+        """
+        txt = Dgt.DISPLAY_TEXT(
+            web_text=web_text,
+            large_text=large_text,
+            medium_text=medium_text,
+            small_text=small_text,
+        )
+        if base is not None:
+            txt.wait = base.wait
+            txt.beep = base.beep
+            txt.maxtime = base.maxtime
+            txt.devs = base.devs
+        return txt
+
+    def _spanish_override(self, text_id: str, entxt: Dgt.DISPLAY_TEXT, msg: str):
+        """
+        Provide Spanish translations for texts that currently fall back to English.
+        Only used when no dedicated estxt is defined for a text_id.
+        """
+        if entxt is None:
+            return None
+
+        # Game / PGN related
+        if text_id == "pgngame_end":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Fin de la partida",
+                large_text="Fin partida",
+                medium_text="Fin part",
+                small_text="fin   ",
+            )
+        if text_id == "game_end_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Declarar fin de la partida",
+                large_text="Fin partida",
+                medium_text="Fin part",
+                small_text="fin   ",
+            )
+        if text_id == "game_end_white_wins":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Ganan las blancas",
+                large_text="Blanco gana",
+                medium_text="Blan gana",
+                small_text="B gana",
+            )
+        if text_id == "game_end_black_wins":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Ganan las negras",
+                large_text="Negro gana",
+                medium_text="Negr gana",
+                small_text="N gana",
+            )
+        if text_id == "game_end_draw":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablas",
+                large_text="Tablas",
+                medium_text="tablas",
+                small_text="tabl ",
+            )
+        if text_id == "game_save_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Guardar partida actual",
+                large_text="Guardar   ",
+                medium_text="Guardar ",
+                small_text="guard ",
+            )
+        if text_id == "game_read_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Cargar partida guardada",
+                large_text="Cargar    ",
+                medium_text="Cargar ",
+                small_text="carga ",
+            )
+        if text_id == "game_takeback_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Retirar última jugada",
+                large_text="Deshacer  ",
+                medium_text="Deshacer",
+                small_text="deshac",
+            )
+        if text_id == "game_new_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Empezar nueva partida",
+                large_text="Nueva part",
+                medium_text="Nueva  ",
+                small_text="nueva ",
+            )
+        if text_id == "game_new_yes":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nueva partida: sí",
+                large_text="Nueva SÍ ",
+                medium_text="NuevaSí",
+                small_text="sí   ",
+            )
+        if text_id == "game_new_no":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nueva partida: no",
+                large_text="Nueva NO ",
+                medium_text="NuevaNo",
+                small_text="no   ",
+            )
+        if text_id == "game_contlast_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Continuar última partida",
+                large_text="Continuar ",
+                medium_text="Continu",
+                small_text="cont ",
+            )
+
+        # System / power menu
+        if text_id == "system_power_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Opciones de encendido",
+                large_text="Alimentac ",
+                medium_text="Aliment",
+                small_text="energia",
+            )
+        if text_id == "power_shut_down_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Apagar Raspberry Pi",
+                large_text="Apagar    ",
+                medium_text="Apagar ",
+                small_text="apaga ",
+            )
+        if text_id == "power_restart_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Reiniciar Raspberry Pi",
+                large_text="Reiniciar ",
+                medium_text="Reinicia",
+                small_text="reini ",
+            )
+        if text_id == "power_exit_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Salir de PicoChess",
+                large_text="Salir Pico",
+                medium_text="Salir  ",
+                small_text="salir",
+            )
+
+        # Mode menu
+        if text_id == "mode_training_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Modo entrenamiento",
+                large_text="Entrenam. ",
+                medium_text="Entrena",
+                small_text="entren",
+            )
+        if text_id == "mode_brain_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Motor pensando siempre",
+                large_text="Ponder on ",
+                medium_text="PonderOn",
+                small_text="ponder",
+            )
+        if text_id == "mode_analysis_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Sugerir jugadas",
+                large_text="Sugerir   ",
+                medium_text="Sugiere",
+                small_text="suger ",
+            )
+        if text_id == "mode_kibitz_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mostrar evaluación",
+                large_text="Eval. punt",
+                medium_text="Evalua ",
+                small_text="eval ",
+            )
+        if text_id == "mode_observe_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Observar partida",
+                large_text="Observar  ",
+                medium_text="Observa",
+                small_text="observ",
+            )
+
+        # Analysis output fields
+        if text_id == "analysis_score":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Puntuación de análisis",
+                large_text="Puntuación",
+                medium_text="Punt.  ",
+                small_text="punt ",
+            )
+        if text_id == "analysis_depth":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Profundidad de análisis",
+                large_text="Profundid",
+                medium_text="Profund",
+                small_text="prof ",
+            )
+
+        # Engine menu
+        if text_id == "engine_menu_modern":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Motores modernos",
+                large_text="Modernos  ",
+                medium_text="Modernos",
+                small_text="mod   ",
+            )
+        if text_id == "engine_menu_retro":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Motores clásicos",
+                large_text="Clásicos  ",
+                medium_text="Clásicos",
+                small_text="retro ",
+            )
+        if text_id == "engine_menu_favorites":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Motores especiales e históricos",
+                large_text="Motores fav",
+                medium_text="Favorit",
+                small_text="favor",
+            )
+        if text_id == "engine_menu_retrosettings":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Ajustes de motores clásicos",
+                large_text="Ajus Retro",
+                medium_text="Ajustes",
+                small_text="ajust ",
+            )
+        if text_id == "engine_menu_retrowindow":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pantalla completa / ventana",
+                large_text="Pantalla  ",
+                medium_text="Pantall",
+                small_text="pant ",
+            )
+        if text_id == "engine_menu_retrodisplay":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Aspecto gráfico retro",
+                large_text="Graf retro",
+                medium_text="Retro gr",
+                small_text="retro ",
+            )
+        if text_id == "engine_menu_retrosound":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Sonido retro",
+                large_text="SonidoRet",
+                medium_text="Sonido ",
+                small_text="sonid",
+            )
+        if text_id == "engine_menu_retroinfo":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Información motores retro",
+                large_text="InfoRetro",
+                medium_text="Info   ",
+                small_text="info ",
+            )
+        if text_id == "engine_menu_retrospeed":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Velocidad retro",
+                large_text="VelocRet ",
+                medium_text="Veloc  ",
+                small_text="veloc",
+            )
+
+        # Display / confirm / notation
+        if text_id == "display_confirm_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Confirmar jugadas",
+                large_text="Confirmar ",
+                medium_text="Confirm",
+                small_text="conf ",
+            )
+        if text_id == "display_capital_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Letras mayúsculas",
+                large_text="Mayúsculas",
+                medium_text="Mayusc ",
+                small_text="mayus",
+            )
+        if text_id == "display_notation_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Notación de jugadas",
+                large_text="Notación  ",
+                medium_text="Notac  ",
+                small_text="nota ",
+            )
+
+        # Information menu
+        if text_id == "system_info_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Información del sistema",
+                large_text="Info sist ",
+                medium_text="Info   ",
+                small_text="info ",
+            )
+
+        # PicoTutor / comments (basic labels)
+        if text_id == "picocoach":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Entrenador",
+                large_text="PicoCoach ",
+                medium_text="Entrenad",
+                small_text="coach",
+            )
+        if text_id == "picoexplorer":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Explorador",
+                large_text="Explorador",
+                medium_text="Explora",
+                small_text="explor",
+            )
+
+        # Pico Watcher / Coach / Explorer states
+        if text_id == "picowatcher":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Vigilante",
+                large_text="PicoVigila",
+                medium_text="Vigila ",
+                small_text="vigila",
+            )
+        if text_id == "okpicowatcher":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Vigilante ok",
+                large_text="Vigi ok  ",
+                medium_text="Vig ok ",
+                small_text="v ok ",
+            )
+        if text_id == "picowatcher_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Vigilante: s\u00ed",
+                large_text="Vigi s\u00ed  ",
+                medium_text="Vig si ",
+                small_text="v si ",
+            )
+        if text_id == "picowatcher_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Vigilante: no",
+                large_text="Vigi no  ",
+                medium_text="Vig no ",
+                small_text="v no ",
+            )
+        if text_id == "okpicocoach":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Entrenador ok",
+                large_text="Coach ok  ",
+                medium_text="Entr ok",
+                small_text="c ok ",
+            )
+        if text_id == "picocoach_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Entrenador: s\u00ed",
+                large_text="Coach s\u00ed ",
+                medium_text="Entr si",
+                small_text="c si ",
+            )
+        if text_id == "picocoach_lift":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Entrenador (levanta pieza)",
+                large_text="Levanta pz",
+                medium_text="Lev pz ",
+                small_text="levpz",
+            )
+        if text_id == "picocoach_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Entrenador: no",
+                large_text="Coach no  ",
+                medium_text="Entr no",
+                small_text="c no ",
+            )
+        if text_id == "okpicotutor":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Tutor ok",
+                large_text="Tutor ok ",
+                medium_text="Tutor ok",
+                small_text="tutok",
+            )
+        if text_id == "picoexplorer_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Explorador: s\u00ed",
+                large_text="Explor s\u00ed",
+                medium_text="Expl si",
+                small_text="ex si",
+            )
+        if text_id == "picoexplorer_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Explorador: no",
+                large_text="Explor no",
+                medium_text="Expl no",
+                small_text="ex no",
+            )
+        if text_id == "okpicoexplorer":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Explorador ok",
+                large_text="Explor ok",
+                medium_text="Expl ok",
+                small_text="exok ",
+            )
+
+        # Top-level game menu
+        if text_id == "top_game_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Opciones de partida",
+                large_text="Partida    ",
+                medium_text="Partida ",
+                small_text="partid",
+            )
+        if text_id == "okgameend":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Fin de partida ok",
+                large_text="ok fin    ",
+                medium_text="ok fin ",
+                small_text="okfin",
+            )
+        if text_id == "game_save_game1":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Guardar como 'Partida 1'",
+                large_text="Partida 1  ",
+                medium_text="Partida1",
+                small_text="par 1",
+            )
+        if text_id == "game_save_game2":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Guardar como 'Partida 2'",
+                large_text="Partida 2  ",
+                medium_text="Partida2",
+                small_text="par 2",
+            )
+        if text_id == "game_save_game3":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Guardar como 'Partida 3'",
+                large_text="Partida 3  ",
+                medium_text="Partida3",
+                small_text="par 3",
+            )
+        if text_id == "oksavegame":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Partida guardada",
+                large_text="ok guarda  ",
+                medium_text="ok guard",
+                small_text="okgrd",
+            )
+        if text_id == "game_read_gamelast":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Cargar última partida",
+                large_text="Ult partida",
+                medium_text="UltPart",
+                small_text="u.par",
+            )
+        if text_id == "game_read_game1":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Cargar 'Partida 1'",
+                large_text="Partida 1  ",
+                medium_text="Partida1",
+                small_text="par 1",
+            )
+        if text_id == "game_read_game2":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Cargar 'Partida 2'",
+                large_text="Partida 2  ",
+                medium_text="Partida2",
+                small_text="par 2",
+            )
+        if text_id == "game_read_game3":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Cargar 'Partida 3'",
+                large_text="Partida 3  ",
+                medium_text="Partida3",
+                small_text="par 3",
+            )
+        if text_id == "okreadgame":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Partida cargada",
+                large_text="ok carga   ",
+                medium_text="ok carga",
+                small_text="okcar",
+            )
+        if text_id == "okgamenew":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nueva partida ok",
+                large_text="ok nueva   ",
+                medium_text="ok nueva",
+                small_text="oknue",
+            )
+        if text_id == "game_altmove_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Movimiento alternativo",
+                large_text="Mov altern",
+                medium_text="MovAlt ",
+                small_text="m.alt",
+            )
+        if text_id == "game_altmove_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mov. alternativo: sí",
+                large_text="AltMov sí ",
+                medium_text="AltMovSi",
+                small_text="amsi ",
+            )
+        if text_id == "game_altmove_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mov. alternativo: no",
+                large_text="AltMov no ",
+                medium_text="AltMovNo",
+                small_text="amno ",
+            )
+        if text_id == "okaltmove":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mov. alternativo ok",
+                large_text="AltMov ok ",
+                medium_text="AltMovok",
+                small_text="am ok",
+            )
+        if text_id == "game_contlast_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Continuar última: sí",
+                large_text="Cont sí   ",
+                medium_text="ContSi ",
+                small_text="csi ",
+            )
+        if text_id == "game_contlast_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Continuar última: no",
+                large_text="Cont no   ",
+                medium_text="ContNo ",
+                small_text="cno ",
+            )
+        if text_id == "okcontlast":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Continuar partida ok",
+                large_text="ok cont    ",
+                medium_text="okcont ",
+                small_text="okct",
+            )
+
+        # PicoTutor menu and comments
+        if text_id == "top_picotutor_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Opciones Pico Tutor",
+                large_text="Pico Tutor ",
+                medium_text="PicTutor",
+                small_text="tutor ",
+            )
+        if text_id == "picotutor_picowatcher_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Vigilante",
+                large_text="PicoWatch ",
+                medium_text="Vigilant",
+                small_text="watch ",
+            )
+        if text_id == "picotutor_picocoach_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Entrenador",
+                large_text="PicoCoach ",
+                medium_text="Entrenad",
+                small_text="coach ",
+            )
+        if text_id == "picotutor_picoexplorer_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Pico Explorador",
+                large_text="PicoExplor",
+                medium_text="Explorad",
+                small_text="explor",
+            )
+        if text_id == "picotutor_picoprob_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Frecuencia de comentarios",
+                large_text="Freq. coment",
+                medium_text="FrecCom",
+                small_text="fcom ",
+            )
+        if text_id == "picocom_prob_list":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Prob. comentario = " + msg,
+                large_text="Prob " + msg,
+                medium_text="cprob" + msg,
+                small_text=msg,
+            )
+        if text_id == "picotutor_picocomment_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Comentarios Pico",
+                large_text="PicComent ",
+                medium_text="Coment  ",
+                small_text="comen",
+            )
+        if text_id == "picocomment":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Comentarios Pico",
+                large_text="PicComent ",
+                medium_text="Coment  ",
+                small_text="comen",
+            )
+        if text_id == "picocomment_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Comentarios: apagados",
+                large_text="Coment off",
+                medium_text="Com off",
+                small_text="cooff",
+            )
+        if text_id == "picocomment_on_eng":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Comentarios: uno",
+                large_text="Coment uno",
+                medium_text="C uno ",
+                small_text="c1  ",
+            )
+        if text_id == "picocomment_on_all":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Comentarios: todos",
+                large_text="Coment all",
+                medium_text="C todos",
+                small_text="call ",
+            )
+        if text_id == "okpicocomment":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Comentario ok",
+                large_text="Coment ok ",
+                medium_text="Com ok ",
+                small_text="c ok ",
+            )
+
+        # Position / board errors
+        if text_id == "position_fail":
+            if "clear" in msg:
+                casilla = msg[-2:]
+                texto = "Quita la pieza de " + casilla
+                return self._create_spanish_text(
+                    entxt,
+                    web_text=texto,
+                    large_text=("Quita " + casilla).ljust(11)[:11],
+                    medium_text=("Quita " + casilla).ljust(8)[:8],
+                    small_text=casilla,
+                )
+            if "put" in msg and len(msg) >= 7:
+                casilla = msg[-2:]
+                pieza = msg[4].upper()
+                texto = "Pon " + pieza + " en " + casilla
+                return self._create_spanish_text(
+                    entxt,
+                    web_text=texto,
+                    large_text=("Pon " + pieza + " " + casilla).ljust(11)[:11],
+                    medium_text=("Pon " + pieza + " " + casilla).ljust(8)[:8],
+                    small_text=pieza + casilla,
+                )
+            # Otros casos: usamos el texto base en inglés
+            return None
+
+        # PicoTutor dynamic messages
+        if text_id == "picotutor_msg":
+            if msg == "POSOK":
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Posici\u00f3n correcta",
+                    large_text="Posic ok ",
+                    medium_text="Pos ok ",
+                    small_text="posok",
+                )
+            if msg == "ACTIVE":
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Pico Tutor activado",
+                    large_text="Tutor on ",
+                    medium_text="Tut on ",
+                    small_text="tuton",
+                )
+            if msg == "ANALYSIS":
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Pico Tutor (an\u00e1lisis)",
+                    large_text="Tutor anal",
+                    medium_text="Analisis",
+                    small_text="anal ",
+                )
+            if "HINT" in msg:
+                move = msg[4:]
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Sugerencia: " + move,
+                    large_text="Sug " + move,
+                    medium_text="Sug " + move,
+                    small_text="sg " + move[:2],
+                )
+            if "THREAT" in msg:
+                move = msg[6:]
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Amenaza: " + move,
+                    large_text="Amen " + move,
+                    medium_text="Amen " + move,
+                    small_text="amn " + move[:2],
+                )
+            if "BEST" in msg:
+                move = msg[4:]
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Mejor jugada: " + move,
+                    large_text="Mejor " + move,
+                    medium_text="Mejor " + move,
+                    small_text="mej " + move[:2],
+                )
+            if "POS" in msg and msg != "POSOK":
+                value = msg[3:]
+                return self._create_spanish_text(
+                    entxt,
+                    web_text="Evaluaci\u00f3n posici\u00f3n: " + value,
+                    large_text="Eval " + value,
+                    medium_text="Eval " + value,
+                    small_text=value[:6],
+                )
+
+        # Time mode menus
+        if text_id == "mode_pgnreplay_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Repetir partida PGN",
+                large_text="RepetirPGN",
+                medium_text="PGNRep ",
+                small_text="PGN  ",
+            )
+        if text_id == "timemode_fischer_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tiempo Fischer",
+                large_text="Fischer   ",
+                medium_text="Fischer ",
+                small_text="fischr",
+            )
+        if text_id == "timemode_tourn_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Niveles de torneo",
+                large_text="Torneo    ",
+                medium_text="Torneo  ",
+                small_text="torneo",
+            )
+        if text_id == "timemode_node_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nodos de búsqueda",
+                large_text="Nodos     ",
+                medium_text="Nodos   ",
+                small_text="nodos",
+            )
+        if text_id == "timemode_depth_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Profundidad búsqueda",
+                large_text="Profundid ",
+                medium_text="Profund",
+                small_text="prof ",
+            )
+        if text_id == "tc_fisch":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Fischer " + msg,
+                large_text="Fischr" + msg,
+                medium_text="Fsh" + msg,
+                small_text="f" + msg,
+            )
+        if text_id == "tc_tourn":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Torneo " + msg,
+                large_text=msg[:11],
+                medium_text=msg[:8],
+                small_text=msg[:6],
+            )
+        if text_id == "tc_depth":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Profundidad " + msg,
+                large_text="Prof " + msg,
+                medium_text="Prof " + msg,
+                small_text="pro " + msg,
+            )
+        if text_id == "tc_node":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nodos " + msg,
+                large_text="Nodos " + msg,
+                medium_text="Nodos" + msg,
+                small_text="nod" + msg,
+            )
+
+        # System menus (logfile, display, boards, theme)
+        if text_id == "system_logfile_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Enviar log por correo",
+                large_text="Enviar log",
+                medium_text="Log mail",
+                small_text="logml",
+            )
+        if text_id == "system_display_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Ajustes de pantalla",
+                large_text="Pantalla  ",
+                medium_text="Display ",
+                small_text="disp ",
+            )
+        if text_id == "system_eboard_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero electrónico",
+                large_text="E-Tablero ",
+                medium_text="E-Board ",
+                small_text="ebrd ",
+            )
+        if text_id == "eboard_dgt_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero DGT",
+                large_text="DGT        ",
+                medium_text="DGT     ",
+                small_text="dgt   ",
+            )
+        if text_id == "eboard_certabo_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero Certabo",
+                large_text="Certabo    ",
+                medium_text="Certabo ",
+                small_text="certab",
+            )
+        if text_id == "eboard_chesslink_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero ChessLink",
+                large_text="ChessLink  ",
+                medium_text="ChessLnk",
+                small_text="cheslk",
+            )
+        if text_id == "eboard_chessnut_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero Chessnut",
+                large_text="Chessnut   ",
+                medium_text="Chessnut",
+                small_text="chesnt",
+            )
+        if text_id == "eboard_ichessone_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero iChessOne",
+                large_text="iChessOne  ",
+                medium_text="iChess1 ",
+                small_text="ichess",
+            )
+        if text_id == "eboard_noeboard_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Sin tablero (sólo Web)",
+                large_text="sin E-Board",
+                medium_text="sin tabl",
+                small_text="ning ",
+            )
+        if text_id == "system_theme_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tema Web",
+                large_text="Tema Web  ",
+                medium_text="Tema   ",
+                small_text="tema ",
+            )
+        if text_id == "theme_light_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tema Web: claro",
+                large_text="tema claro",
+                medium_text="claro",
+                small_text="claro",
+            )
+        if text_id == "theme_dark_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tema Web: oscuro",
+                large_text="tema oscur",
+                medium_text="oscuro",
+                small_text="oscuro",
+            )
+        if text_id == "theme_time_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tema Web: por hora",
+                large_text="tema hora ",
+                medium_text="hora  ",
+                small_text="hora ",
+            )
+        if text_id == "theme_auto_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tema Web: auto",
+                large_text="tema auto ",
+                medium_text="auto",
+                small_text="auto",
+            )
+
+        # Game result and updates
+        if text_id == "gameresult_unknown":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Resultado desconocido",
+                large_text="sin result",
+                medium_text="sinres",
+                small_text="sres ",
+            )
+        if text_id == "updt_picochess":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Reiniciar y actualizar PicoChess",
+                large_text="Act Pico  ",
+                medium_text="Act Pico",
+                small_text="Actual",
+            )
+        if text_id == "power_updt_engines":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Actualizar motores a última versión",
+                large_text="Act motores",
+                medium_text="ActMot ",
+                small_text="ActMt",
+            )
+
+        # Beep / theme / e-board confirmations
+        if text_id == "beep_sample_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Probar sonido",
+                large_text="Ejemplo   ",
+                medium_text="Ejemplo",
+                small_text="sonid",
+            )
+        if text_id == "okeboard":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tablero ok",
+                large_text="ok tablero",
+                medium_text="ok ebrd",
+                small_text="okbrd",
+            )
+        if text_id == "oktheme":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Tema ok",
+                large_text="ok tema   ",
+                medium_text="ok tema",
+                small_text="oktm ",
+            )
+        if text_id == "oklogfile":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Log enviado",
+                large_text="ok log    ",
+                medium_text="ok log ",
+                small_text="oklog",
+            )
+
+        # Voice and volume
+        if text_id == "voice_speed_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Velocidad de voz",
+                large_text="Veloc voz ",
+                medium_text="Vel voz",
+                small_text="vloc ",
+            )
+        if text_id == "voice_speed":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Velocidad voz " + msg,
+                large_text="VeloVoz " + msg,
+                medium_text="Vvoz " + msg,
+                small_text="v " + msg,
+            )
+        if text_id == "okspeed":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Velocidad voz ok",
+                large_text="ok vel voz",
+                medium_text="ok veloc",
+                small_text="okvel",
+            )
+        if text_id == "voice_volume_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Volumen de voz",
+                large_text="Vol voz   ",
+                medium_text="Vol voz",
+                small_text="vvol ",
+            )
+        if text_id == "voice_volume":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Volumen voz " + msg,
+                large_text="VolVoz " + msg,
+                medium_text="Vol " + msg,
+                small_text="v " + msg,
+            )
+        if text_id == "okvolume":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Volumen ok",
+                large_text="ok volumen",
+                medium_text="ok vol ",
+                small_text="okvol",
+            )
+
+        # Display: ponder interval and clock side
+        if text_id == "display_ponder_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Intervalo de ponder",
+                large_text="Int ponder",
+                medium_text="PondInt",
+                small_text="ponint",
+            )
+        if text_id == "okponder":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Intervalo ok",
+                large_text="ok int   ",
+                medium_text="okInt  ",
+                small_text="okint",
+            )
+        if text_id == "ponder_interval":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Intervalo ponder " + msg,
+                large_text="Int " + msg,
+                medium_text="Int " + msg,
+                small_text="I " + msg,
+            )
+        if text_id == "display_clockside_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Lado del reloj",
+                large_text="Lado reloj",
+                medium_text="Reloj  ",
+                small_text="lado ",
+            )
+        if text_id == "clockside_left":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Reloj a la izquierda",
+                large_text="Reloj izq ",
+                medium_text="izq    ",
+                small_text="izq ",
+            )
+        if text_id == "clockside_right":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Reloj a la derecha",
+                large_text="Reloj der ",
+                medium_text="der    ",
+                small_text="der ",
+            )
+        if text_id == "okclockside":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Lado reloj ok",
+                large_text="ok lado   ",
+                medium_text="ok reloj",
+                small_text="okld",
+            )
+
+        # Confirm / notation / engine name
+        if text_id == "okconfirm":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Confirmación ok",
+                large_text="ok confirm",
+                medium_text="okConf ",
+                small_text="okcnf",
+            )
+        if text_id == "confirm_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Confirmación: sí",
+                large_text="Conf sí  ",
+                medium_text="Conf si",
+                small_text="csi ",
+            )
+        if text_id == "confirm_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Confirmación: no",
+                large_text="Conf no  ",
+                medium_text="Conf no",
+                small_text="cno ",
+            )
+        if text_id == "display_enginename_menu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mostrar nombre del motor",
+                large_text="Nom motor ",
+                medium_text="NomMot ",
+                small_text="nmot",
+            )
+        if text_id == "okenginename":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nombre de motor ok",
+                large_text="ok nom mot",
+                medium_text="okNom ",
+                small_text="oknm",
+            )
+        if text_id == "enginename_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nombre motor: sí",
+                large_text="NomMot sí ",
+                medium_text="Mot si ",
+                small_text="msi ",
+            )
+        if text_id == "enginename_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nombre motor: no",
+                large_text="NomMot no ",
+                medium_text="Mot no ",
+                small_text="mno ",
+            )
+        if text_id == "okcapital":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mayúsculas ok",
+                large_text="ok mayusc ",
+                medium_text="okMayus",
+                small_text="okmy",
+            )
+        if text_id == "capital_on":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mayúsculas: sí",
+                large_text="Mayus sí  ",
+                medium_text="MayusSi",
+                small_text="mysi",
+            )
+        if text_id == "capital_off":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Mayúsculas: no",
+                large_text="Mayus no  ",
+                medium_text="MayusNo",
+                small_text="myno",
+            )
+        if text_id == "oknotation":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Notación ok",
+                large_text="ok Notac.",
+                medium_text="okNota",
+                small_text="oknt",
+            )
+        if text_id == "notation_short":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Notación corta",
+                large_text="Nota corta",
+                medium_text="Nt corta",
+                small_text="corta",
+            )
+        if text_id == "notation_long":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Notación larga",
+                large_text="Nota larga",
+                medium_text="Nt larga",
+                small_text="larga",
+            )
+
+        # Connection / misc
+        if text_id == "login":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Iniciando sesión",
+                large_text="login...   ",
+                medium_text="login...",
+                small_text="login ",
+            )
+        if text_id == "serverfailed":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Error de servidor",
+                large_text="Err servidor",
+                medium_text="ErrServ",
+                small_text="serr ",
+            )
+        if text_id == "userfailed":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Error de login",
+                large_text="login error",
+                medium_text="loginerr",
+                small_text="lgerr ",
+            )
+        if text_id == "noopponent":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Sin oponente",
+                large_text="Sin oponente",
+                medium_text="Sin op ",
+                small_text="sope ",
+            )
+        if text_id == "newposition":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Nueva posición",
+                large_text="Nva Pos   ",
+                medium_text="NvaPos ",
+                small_text="npos ",
+            )
+        if text_id == "restoregame":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Reanudar última partida",
+                large_text="Ult partida",
+                medium_text="UltPart",
+                small_text="u.par",
+            )
+        if text_id == "seeking":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Buscando oponente...",
+                large_text="Buscando  ",
+                medium_text="Busca  ",
+                small_text="busc ",
+            )
+        if text_id == "enginesetup":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Configuración del motor",
+                large_text="Conf motor",
+                medium_text="ConfMot",
+                small_text="cmot",
+            )
+        if text_id == "moveretry":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Repite jugada",
+                large_text="jugada mal",
+                medium_text="j.mal ",
+                small_text="mal  ",
+            )
+        if text_id == "movewrong":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Jugada incorrecta",
+                large_text="jugada mal",
+                medium_text="j.mal ",
+                small_text="mal  ",
+            )
+        if text_id == "exitmenu":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Salir del menú",
+                large_text="Salir menú",
+                medium_text="Salir  ",
+                small_text="salir",
+            )
+        if text_id == "errorroom":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Error de sala",
+                large_text="error sala",
+                medium_text="err sala",
+                small_text="norom",
+            )
+        if text_id == "noboard":
+            return self._create_spanish_text(
+                entxt,
+                web_text="Sin tablero conectado",
+                large_text="sin tablero",
+                medium_text="sin tab",
+                small_text="stab",
+            )
+        if text_id == "picochess":
+            return self._create_spanish_text(
+                entxt,
+                web_text=f"PicoChess {self.version}",
+                large_text="PicoChess" + self.version_large,
+                medium_text=f"pico {self.version}",
+                small_text=f"pic{self.version}",
+            )
+        if text_id == "okpico":
+            return self._create_spanish_text(
+                entxt,
+                web_text="PicoChess ok",
+                large_text="ok pico   ",
+                medium_text="ok pico",
+                small_text="okpc ",
+            )
+
+        # Default: no Spanish override
+        return None

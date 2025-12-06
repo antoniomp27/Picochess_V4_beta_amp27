@@ -41,6 +41,8 @@ apt -y install python3-pyaudio portaudio19-dev
 apt -y install python3-venv
 apt -y install libffi-dev libssl-dev
 apt -y install tk tcl libtcl8.6
+# for mame_emulation we need
+apt -y install xdotool
 # following lines are for (building) and running leela-chess-zero
 # apt -y install libopenblas-dev ninja-build meson
 # added more tools for building lc0 0.32
@@ -187,7 +189,7 @@ fi
 if [ -f install-engines.sh ]; then
     cd "$REPO_DIR" || exit 1
     chmod +x install-engines.sh 2>/dev/null
-    sudo -u pi ./install-engines.sh
+    sudo -u pi ./install-engines.sh small
 else
     echo "install-engines.sh missing — cannot install engines."
 fi
@@ -260,6 +262,7 @@ chmod +x "$REPO_DIR/check-update-status.sh"
 chmod +x "$REPO_DIR/check-git-status.sh"
 chmod +x "$REPO_DIR/check-git-tags.sh"
 chmod +x "$REPO_DIR/move-engines-to-backup.sh"
+chmod +x "$REPO_DIR/restore-engines-from-backup.sh"
 # script to help check if feature branches have added or reduced pylint errors/warnings
 # see pylint-check.sh for more info
 chmod +x "$REPO_DIR/pylint-check.sh"

@@ -14,6 +14,7 @@
 #pv_output div,
 #pv_output div[id^="pv_"],
 #pv_output .list-group,
+#pv_output .list-group-item,
 #pv_output .gameMoves,
 #pv_output .analysis-line-compact,
 #pv_output .analysis-line-compact *,
@@ -22,7 +23,14 @@
     color: inherit !important;
 }
 
-/* Cada línea de análisis - compacta y coherente */
+/* Asegurar que hereda del contenedor padre */
+#pv_output .list-group-item {
+    background-color: transparent !important;
+    color: inherit !important;
+    border: 1px solid rgba(var(--bs-border-color-rgb, 233, 236, 239), 0.5) !important;
+}
+
+/* Cada línea de análisis - MÁS COMPACTA */
 #pv_output .list-group-item {
     background-color: transparent !important;
     color: inherit !important;
@@ -41,9 +49,12 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-#pv_output .list-group-item:hover * { background-color: transparent !important; }
 
-/* Nueva estructura: línea compacta */
+#pv_output .list-group-item:hover * {
+    background-color: transparent !important;
+}
+
+/* NUEVA ESTRUCTURA: Una sola línea compacta */
 .analysis-line-compact {
     display: flex;
     align-items: center;
@@ -78,12 +89,29 @@
     flex-shrink: 0;
 }
 
-/* Variaciones de puntuación */
-.score-positive { background: linear-gradient(135deg, #28a745, #1e7e34); box-shadow: 0 2px 4px rgba(40,167,69,0.3); }
-.score-negative { background: linear-gradient(135deg, #dc3545, #c82333); box-shadow: 0 2px 4px rgba(220,53,69,0.3); }
-.score-mate    { background: linear-gradient(135deg, #fd7e14, #e55100); box-shadow: 0 2px 4px rgba(253,126,20,0.3); animation: pulse-mate 2s infinite; }
+/* Puntuación positiva (ventaja blancas) */
+.score-positive {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    box-shadow: 0 2px 4px rgba(40,167,69,0.3);
+}
 
-@keyframes pulse-mate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+/* Puntuación negativa (ventaja negras) */
+.score-negative {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    box-shadow: 0 2px 4px rgba(220,53,69,0.3);
+}
+
+/* Puntuación de mate */
+.score-mate {
+    background: linear-gradient(135deg, #fd7e14, #e55100);
+    box-shadow: 0 2px 4px rgba(253,126,20,0.3);
+    animation: pulse-mate 2s infinite;
+}
+
+@keyframes pulse-mate {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
 
 /* Profundidad compacta */
 .depth-display {
@@ -96,7 +124,7 @@
     order: 3;
 }
 
-/* Continuación discreta */
+/* Movimientos de continuación - más discretos */
 .continuation-moves {
     font-size: 0.85rem;
     color: #6c757d;
@@ -108,10 +136,13 @@
     order: 2;
 }
 
-/* Movimientos */
-.pv-moves { font-family: 'Courier New', monospace; font-weight: 500; }
+/* Movimientos en la variación */
+.pv-moves {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
 
-/* Primer movimiento destacado */
+/* Primer movimiento destacado - MÁS COMPACTO */
 .first-move {
     background: #fff3cd;
     color: #856404;
@@ -128,17 +159,37 @@
 }
 
 /* Números de jugada */
-.move-number { color: #6c757d; font-weight: normal; margin-right: 4px; font-size: 0.8rem; }
+.move-number {
+    color: #6c757d;
+    font-weight: normal;
+    margin-right: 4px;
+}
 
-/* Contenedor multi-PV */
-.multi-pv-container { display: flex; flex-direction: column; gap: 8px; }
+/* Contenedor de múltiples líneas */
+.multi-pv-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-/* Indicadores de línea */
-.pv-line-indicator { position: absolute; left: -8px; top: 50%; transform: translateY(-50%); width: 4px; height: 60%; border-radius: 2px; }
-.pv-line-1 { background: #007bff; } .pv-line-2 { background: #28a745; } .pv-line-3 { background: #ffc107; }
-.pv-line-4 { background: #dc3545; } .pv-line-5 { background: #6f42c1; }
+/* Indicador de línea múltiple */
+.pv-line-indicator {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    border-radius: 2px;
+}
 
-/* Controles del motor */
+.pv-line-1 { background: #007bff; }
+.pv-line-2 { background: #28a745; }
+.pv-line-3 { background: #ffc107; }
+.pv-line-4 { background: #dc3545; }
+.pv-line-5 { background: #6f42c1; }
+
+/* Controles del motor - MÁS COMPACTOS */
 #engineMultiPVStatus {
     background: #e9ecef;
     padding: 4px 8px;
@@ -157,16 +208,22 @@
     font-weight: 500;
     transition: all 0.3s ease;
 }
+
 #analyzeBtn:hover {
     background: linear-gradient(135deg, #20c997, #28a745);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(40,167,69,0.3);
 }
+
 #analyzeBtn.analyzing {
     background: linear-gradient(135deg, #dc3545, #c82333);
     animation: pulse-analyzing 1.5s infinite;
 }
-@keyframes pulse-analyzing { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+@keyframes pulse-analyzing {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
 
 /* Botones más/menos */
 #analyzePlus, #analyzeMinus {
@@ -182,56 +239,193 @@
     margin: 0 2px;
     transition: all 0.3s ease;
 }
-#analyzePlus:hover, #analyzeMinus:hover { background: #5a6268; transform: scale(1.1); }
 
-/* Responsive móviles */
+#analyzePlus:hover, #analyzeMinus:hover {
+    background: #5a6268;
+    transform: scale(1.1);
+}
+
+/* Estilos adicionales para la nueva estructura */
+.move-number {
+    color: #6c757d;
+    font-weight: normal;
+    font-size: 0.8rem;
+}
+
+.pv-moves {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
+
+/* Responsive para móviles */
 @media (max-width: 768px) {
-    .analysis-line-compact { font-size: 0.8rem; gap: 4px; }
-    .score-display { font-size: 0.9rem; padding: 2px 6px; min-width: 45px; }
-    .first-move { font-size: 1rem; padding: 1px 4px; }
-    .continuation-moves { font-size: 0.75rem; }
-    .depth-display { font-size: 0.7rem; padding: 1px 4px; }
-    #pv_output .list-group-item { padding: 4px 6px; margin-bottom: 2px; }
+    .analysis-line-compact {
+        font-size: 0.8rem;
+        gap: 4px;
+    }
+    
+    .score-display {
+        font-size: 0.9rem;
+        padding: 2px 6px;
+        min-width: 45px;
+    }
+    
+    .first-move {
+        font-size: 1rem;
+        padding: 1px 4px;
+    }
+    
+    .continuation-moves {
+        font-size: 0.75rem;
+    }
+    
+    .depth-display {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
+    
+    #pv_output .list-group-item {
+        padding: 4px 6px;
+        margin-bottom: 2px;
+    }
 }
 
-/* Contenedor PV */
-.pv-container { margin-top: 0; margin-left: 12px; margin-bottom: 1vh; }
-
-/* 1024x600: compacto y estricto en altura */
-@media (min-width: 1000px) and (max-width: 1100px) and (max-height: 650px) {
-    .pv-container { margin-left: 6px !important; margin-bottom: 5px !important; }
-    .scroll_engine { max-height: 250px !important; overflow-y: auto !important; }
-    #analyzeBtn, #analyzePlus, #analyzeMinus { font-size: 0.8rem !important; padding: 4px 8px !important; }
-    #engineMultiPVStatus { font-size: 0.75rem !important; padding: 2px 6px !important; }
-    #pv_output { padding: 3px !important; margin-top: 2px !important; }
-    #pv_output .list-group-item { padding: 3px 5px !important; margin-bottom: 2px !important; }
+/* Clase para contenedor de PV */
+.pv-container {
+    margin-top: 0px;
+    margin-left: 12px;
+    margin-bottom: 1vh;
 }
 
-/* 1024x800: más espacio vertical */
-@media (min-width: 1000px) and (max-width: 1100px) and (min-height: 651px) and (max-height: 850px) {
-    .pv-container { margin-left: 6px !important; margin-bottom: 8px !important; }
-    .analysis-line-compact { font-size: 0.85rem !important; gap: 4px; }
-    .score-display { font-size: 0.95rem !important; padding: 2px 6px; min-width: 40px; }
-    .first-move { font-size: 0.9rem; padding: 1px 4px; }
-    .continuation-moves { font-size: 0.7rem; }
-    .depth-display { font-size: 0.65rem; padding: 1px 4px; }
-    .scroll_engine { max-height: 320px !important; }
-    #pv_output { padding: 3px !important; margin-top: 2px !important; }
-    #pv_output .list-group-item { padding: 3px 5px !important; margin-bottom: 2px !important; }
-    #engineMultiPVStatus { font-size: 0.75rem !important; padding: 2px 6px !important; }
-    #engine .row { margin-bottom: 2px !important; }
-    #engineStatus { font-size: 0.75rem !important; margin-bottom: 2px !important; }
+/* Optimización para 1024x600 y 1024x800 - Análisis compacto */
+@media (min-width: 1000px) and (max-width: 1100px) and (max-height: 850px) {
+    /* Reducir margen del contenedor PV según altura */
+    .pv-container {
+        margin-left: 6px !important;
+        margin-bottom: 5px !important;
+    }
 }
 
-/* Excepciones para colores específicos (mantener aspecto) */
-#pv_output .score-display { background: linear-gradient(135deg, #007bff, #0056b3) !important; color: white !important; }
-#pv_output .score-positive { background: linear-gradient(135deg, #28a745, #1e7e34) !important; color: white !important; }
-#pv_output .score-negative { background: linear-gradient(135deg, #dc3545, #c82333) !important; color: white !important; }
-#pv_output .score-mate    { background: linear-gradient(135deg, #fd7e14, #e55100) !important; color: white !important; }
-#pv_output .first-move    { background: #fff3cd !important; color: #856404 !important; border-color: #ffc107 !important; }
-#pv_output .depth-display { background: #6c757d !important; color: white !important; }
+/* Ajustes adicionales solo para 1024x800 */
+@media (min-width: 1000px) and (max-width: 1100px) and (min-height: 750px) and (max-height: 850px) {
+    .pv-container {
+        margin-bottom: 8px !important;
+    }
+    
+    .analysis-line-compact {
+        font-size: 0.85rem !important;
+    }
+    
+    .score-display {
+        font-size: 0.95rem !important;
+    }
+    
+    .scroll_engine {
+        max-height: 40vh !important;
+    }
+    /* Reducir tamaño de elementos de análisis */
+    .analysis-line-compact {
+        font-size: 0.75rem;
+        gap: 4px;
+    }
+    
+    .score-display {
+        font-size: 0.85rem;
+        padding: 2px 6px;
+        min-width: 40px;
+    }
+    
+    .first-move {
+        font-size: 0.9rem;
+        padding: 1px 4px;
+    }
+    
+    .continuation-moves {
+        font-size: 0.7rem;
+    }
+    
+    .depth-display {
+        font-size: 0.65rem;
+        padding: 1px 4px;
+    }
+    
+    /* Reducir padding y margen de líneas de análisis */
+    #pv_output .list-group-item {
+        padding: 3px 5px !important;
+        margin-bottom: 2px !important;
+    }
+    
+    /* Asegurar que el contenedor de análisis no desborde */
+    #pv_output {
+        padding: 3px !important;
+        margin-top: 2px !important;
+    }
+    
+    /* Forzar altura máxima del scroll_engine cuando está en análisis */
+    .scroll_engine {
+        max-height: 31.25vh !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Botones de análisis más compactos */
+    #analyzeBtn, #analyzePlus, #analyzeMinus {
+        font-size: 0.8rem !important;
+        padding: 4px 8px !important;
+    }
+    
+    #engineMultiPVStatus {
+        font-size: 0.75rem !important;
+        padding: 2px 6px !important;
+    }
+    
+    /* Prevenir que el tab Engine crezca demasiado */
+    #engine .row {
+        margin-bottom: 2px !important;
+    }
+    
+    #engineStatus {
+        font-size: 0.75rem !important;
+        margin-bottom: 2px !important;
+    }
+}
+
+
+
+/* Excepciones para elementos con colores específicos - mantener sus fondos distintivos */
+#pv_output .score-display {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    color: white !important;
+}
+
+#pv_output .score-positive {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+    color: white !important;
+}
+
+#pv_output .score-negative {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    color: white !important;
+}
+
+#pv_output .score-mate {
+    background: linear-gradient(135deg, #fd7e14, #e55100) !important;
+    color: white !important;
+}
+
+#pv_output .first-move {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    border-color: #ffc107 !important;
+}
+
+#pv_output .depth-display {
+    background: #6c757d !important;
+    color: white !important;
+}
 
 /* Tema oscuro */
 @media (prefers-color-scheme: dark) {
-    .continuation-moves { color: #adb5bd; }
+    .continuation-moves {
+        color: #adb5bd;
+    }
 }
